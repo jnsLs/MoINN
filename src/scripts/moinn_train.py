@@ -5,11 +5,11 @@ from torch.optim import Adam, SGD
 import schnetpack as spk
 from schnetpack.nn.cutoff import CosineCutoff
 
-from ..src.clustering.clustering_module import Clustering
-from ..src.clustering.loss import clustering_loss_fn, cut_loss, ortho_loss, entropy_loss
-from ..src.clustering.model import EndToEndModel
-from ..src.clustering.trainer import Trainer
-from ..src.clustering.utils.parsing import get_parser
+from moinn.clustering.clustering_module import Clustering
+from moinn.clustering.loss import clustering_loss_fn, cut_loss, ortho_loss, entropy_loss
+from moinn.clustering.model import EndToEndModel
+from moinn.clustering.trainer import Trainer
+from moinn.clustering.utils.parsing import get_parser
 
 
 ########################################################################################################################
