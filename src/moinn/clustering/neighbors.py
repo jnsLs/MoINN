@@ -4,10 +4,10 @@ from schnetpack.nn.cutoff import HardCutoff
 
 import os
 
-import pybel
+#import pybel
 #import openbabel as ob
-from rdkit import Chem
-from rdkit.Chem import AllChem
+#from rdkit import Chem
+#from rdkit.Chem import AllChem
 
 import numpy as np
 
@@ -118,77 +118,3 @@ class AdjMatrix(nn.Module):
         if self.normalize:
             adj = self._normalize(adj)
         return adj
-
-
-class Molecule:
-    """
-    pos: (dim: n_at x 3)
-    at_num: (dim: n_at)
-    """
-    
-    def __init__(self, pos, at_num, at_mask):
-        n_nodes = int(at_mask.sum().item())
-
-        self.pos = pos[:n_nodes]
-        self.at_num = at_num[:n_nodes]
-        self._define_obmol()
-        self._define_pymol()
-        self._define_rdkmol()
-        self.n_nodes = n_nodes
-        self.graph_dim = at_num.shape[0] # also counts zero-atom-nodes
-        ##self.n_nodes = self.rdkmol.GetNumAtoms()
-    
-    def _define_obmol(self):
-        # use openbabel to infer bonds and bond order:
-        obmol = ob.OBMol()
-        obmol.BeginModify()
-        # set positions and atomic numbers of all atoms in the molecule
-        for p, n in zip(self.pos, self.at_num):
-            obatom = obmol.NewAtom()
-            obatom.SetAtomicNum(int(n))
-            obatom.SetVector(*p.tolist())
-        # infer bonds and bond order
-        obmol.ConnectTheDots()
-        obmol.PerceiveBondOrders()
-        # finish
-        obmol.EndModify()
-        self.obmol = obmol
-        
-    def _define_pymol(self):
-        pymol = pybel.Molecule(self.obmol)
-        self.pymol = pymol
-    
-    def _define_rdkmol(self):
-        # conversion openbabel --> rdkit (by storing and loading mol file)
-        #self.pymol.removeh()
-        self.pymol.write(format="mol", filename="tmp.mol", overwrite=False)
-        rdkmol = Chem.MolFromMolFile("tmp.mol")
-        os.remove("tmp.mol")
-        # add hydrogen atoms
-        rdkmol = Chem.AddHs(rdkmol)
-        self.rdkmol = rdkmol
-        
-    def embed_in_2d(self):
-        # compute 2D embedding
-        AllChem.Compute2DCoords(self.rdkmol)
-        # compute 2D positions
-        pos = []
-        for i in range(self.n_nodes):
-            conformer_pos = self.rdkmol.GetConformer().GetAtomPosition(i)
-            pos.append([conformer_pos.x,conformer_pos.y])
-        pos = np.array(pos)
-        return(pos)
-    
-    def get_bond_graph(self):
-        graph = np.zeros((self.graph_dim, self.graph_dim), dtype=int)
-        for obatom in ob.OBMolAtomIter(self.obmol):
-            at_idx = obatom.GetIdx()-1
-            for neighbour_atom in ob.OBAtomAtomIter(obatom):
-                nb_idx = neighbour_atom.GetIdx()-1
-                graph[at_idx][nb_idx] = 1
-        return(graph)
-    
-    def get_canonical_smiles(self):
-        can = pybel.Molecule(self.obmol).write("can")
-        ##rdkmol = Chem.MolFromSmiles(_can)
-        return(can)

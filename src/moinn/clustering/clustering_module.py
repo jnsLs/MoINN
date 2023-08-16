@@ -5,9 +5,9 @@ from schnetpack.nn.initializers import zeros_initializer
 
 from schnetpack import Properties
 from schnetpack.nn.base import Dense
-from schnetpack.nn.cutoff import HardCutoff, CosineCutoff, SwitchFunction
-from schnetpack.clustering.activations import softmax, swish
-from schnetpack.clustering.neighbors import AdjMatrix, PairwiseDistances
+from schnetpack.nn.cutoff import HardCutoff, CosineCutoff#, SwitchFunction
+from moinn.clustering.activations import softmax, swish
+from moinn.clustering.neighbors import AdjMatrix, PairwiseDistances
 
 
 class TypeMapping(nn.Module):
