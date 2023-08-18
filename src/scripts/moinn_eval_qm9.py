@@ -4,8 +4,8 @@ import torch
 import matplotlib.pyplot as plt
 from shutil import rmtree
 
-from moinn.evaluation import UsedTypes
-from moinn.evaluation import get_moieties
+from moinn.evaluation import EnvironmentTypes
+from moinn.evaluation import get_topk_moieties
 
 
 def plot_table(figname, filled_clusters, cellText, rows, colors_text=None):
@@ -48,6 +48,7 @@ if __name__ == "__main__":
     eval_set_size = 100
     device = torch.device('cuda')
     batch_size = 1
+    topk = 5
 
     atom_names_dict = {1: "H", 6: "C", 7: "N", 8: "O", 9: "F", 16: "S"}
 
@@ -75,10 +76,12 @@ if __name__ == "__main__":
     modelpath = os.path.join(mdir, "best_model")
     model = torch.load(modelpath, map_location=device)
 
-    used_types_class = UsedTypes(test_loader, model, device)
-    used_types, filled_clusters = used_types_class.get_used_types()
+    environment_types = EnvironmentTypes(test_loader, model, device)
+    used_types, filled_clusters = environment_types.get_used_types()
 
-    substruc_indices, count_values, all_substructures_dense = get_moieties(test_loader, model, used_types, device)
+    substruc_indices, count_values, all_substructures_dense = get_topk_moieties(
+        test_loader, model, used_types, topk, device
+    )
 
     n_used_types = substruc_indices.shape[1]
 

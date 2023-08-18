@@ -1,14 +1,14 @@
 import os
 import torch
 from torch.utils.data.sampler import RandomSampler
-from torch.optim import Adam, SGD
+from torch.optim import Adam
 import schnetpack as spk
 from schnetpack.nn.cutoff import CosineCutoff
 
 from moinn.clustering.clustering_module import Clustering
 from moinn.clustering.loss import clustering_loss_fn, cut_loss, ortho_loss, entropy_loss
 from moinn.clustering.model import EndToEndModel
-from moinn.clustering.trainer import Trainer
+from moinn.training.trainer import Trainer
 from moinn.clustering.utils.parsing import get_parser
 
 
@@ -42,7 +42,7 @@ spk.utils.spk_utils.to_json(jsonpath, argparse_dict)
 mincut_cutoff_network = spk.nn.cutoff.get_cutoff_by_string(args.mincut_cutoff_function)
 bead_cutoff_network = spk.nn.cutoff.get_cutoff_by_string(args.bead_cutoff_function)
 
-# TODO: cutoff und n_gaussians in argparser
+# TODO: cutoff und n_gaussians in arg parser
 if args.clustering_mode == "supervised":
     # load representation model
     schnet_model = torch.load(os.path.join(args.rep_model_dir, "best_model"))

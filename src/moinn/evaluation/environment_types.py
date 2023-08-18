@@ -4,7 +4,7 @@ from tqdm import tqdm
 import schnetpack as spk
 
 
-class UsedTypes:
+class EnvironmentTypes:
     def __init__(self, loader, model, device=torch.device('cuda')):
         self.loader = loader
         self.model = model
@@ -80,8 +80,8 @@ if __name__ == "__main__":
     modelpath = os.path.join(mdir, "best_model")
     model = torch.load(modelpath, map_location=device)
 
-    used_types_class = UsedTypes(test_loader, model, device)
-    used_types, filled_clusters = used_types_class.get_used_types()
+    environment_types = EnvironmentTypes(test_loader, model, device)
+    used_types, filled_clusters = environment_types.get_used_types()
 
     print(used_types)
     print(filled_clusters)

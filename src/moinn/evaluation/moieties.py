@@ -7,7 +7,7 @@ from moinn.clustering.neighbors import PairwiseDistances, AdjMatrix
 from schnetpack.nn.cutoff import HardCutoff
 
 
-def get_moieties(loader, model, mask, device=torch.device('cuda')):
+def get_topk_moieties(loader, model, mask, topk=5, device=torch.device('cuda')):
 
     atom_names_dict = {1: "H", 6: "C", 7: "N", 8: "O", 9: "F", 16: "S"}
 
@@ -88,7 +88,7 @@ def get_moieties(loader, model, mask, device=torch.device('cuda')):
                 bead_name_tmp += k + str(v)
         all_substructures_dense.append(bead_name_tmp)
     # get topk substructures for each cluster
-    topk = 5
+
     count_values, substruc_indices = counts.topk(k=topk, dim=0)
 
     substruc_indices = substruc_indices.transpose(0, 1)[mask]
