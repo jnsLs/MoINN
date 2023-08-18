@@ -8,7 +8,7 @@ def get_parser():
                         choices=["supervised", "unsupervised"],
                         required=True)
     parser.add_argument("--datapath", help="path/to/dataset", type=str)
-    parser.add_argument("--model_dir", help="directory/of/clustering/model", type=str)
+    parser.add_argument("--model_dir", help="directory/of/nn/model", type=str)
     parser.add_argument("--rep_model_dir", help="directory/of/pretrained/model", type=str)
     parser.add_argument(
         "--features", type=int, help="Size of atom-wise representation", default=128
@@ -22,7 +22,7 @@ def get_parser():
     parser.add_argument(
         "--batch_size",
         type=int,
-        help="Mini-batch size for clustering (default: %(default)s)",
+        help="Mini-batch size for nn (default: %(default)s)",
         default=100,
     )
     parser.add_argument(
@@ -88,7 +88,7 @@ def get_parser():
     )
     parser.add_argument(
         "--clustering_tradeoff",
-        help="tradeoff-factors for clustering loss for entropy loss: [ortho], [entropy]",
+        help="tradeoff-factors for nn loss for entropy loss: [ortho], [entropy]",
         type=float,
         nargs=2,
         default=[1.0, 0.06],

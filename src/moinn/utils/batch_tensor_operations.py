@@ -9,7 +9,7 @@ def batch_operation(operation, tensor_a, tensor_b=None):
     batch tensors. As an input, it takes the pytorch operation and the tensors 
     on which the operation is performed.
     
-    Depending on wether a single tensor operation or a double tensor operation
+    Depending on whether a single tensor operation or a double tensor operation
     is performed, an output tensor is defined. Subsequently, the specified oper-
     ation is iterated over the number of samples contained in the batch.
     """

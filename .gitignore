@@ -1,3 +1,5 @@
 src/moinn.egg-info
-src/moinn/clustering/utils/__pycache__/
+src/moinn/utils/__pycache__/
 src/moinn/evaluation/__pycache__/
+src/moinn/nn/__pycache__/
+src/moinn/training/__pycache__/

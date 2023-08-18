@@ -11,7 +11,7 @@ def clustering_loss_fn(args):
         cut_warmup -= 70
         entropy_warmup -= 70
 
-        # clustering loss
+        # nn loss
         cut = cut_loss(batch, result) / (1 + math.exp((-epoch + cut_warmup) / 10))# * (1 - args.clustering_tradeoff[1])
         ortho = ortho_loss(batch, result, args) * args.clustering_tradeoff[0]# * (1 - args.clustering_tradeoff[1])
         ent = entropy_loss(batch, result) * args.clustering_tradeoff[1] / (1 + math.exp((-epoch + entropy_warmup) / 10))

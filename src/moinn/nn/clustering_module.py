@@ -1,13 +1,12 @@
 import torch
 from torch import nn
 from torch.nn.init import xavier_uniform_, orthogonal_
-from schnetpack.nn.initializers import zeros_initializer
 
 from schnetpack import Properties
 from schnetpack.nn.base import Dense
-from schnetpack.nn.cutoff import HardCutoff, CosineCutoff#, SwitchFunction
-from moinn.clustering.activations import softmax, swish
-from moinn.clustering.neighbors import AdjMatrix, PairwiseDistances
+from schnetpack.nn.cutoff import HardCutoff, CosineCutoff
+from moinn.nn.activations import softmax, swish
+from moinn.nn.neighbors import AdjMatrix, PairwiseDistances
 
 
 class TypeMapping(nn.Module):
@@ -21,7 +20,6 @@ class TypeMapping(nn.Module):
     def __init__(self, n_atom_basis, max_clusters):
         super(TypeMapping, self).__init__()
         self.n_clusters = max_clusters
-        #self.assignment_network = Dense(n_atom_basis, max_clusters, weight_init=orthogonal_, activation=softmax)
         self.assignment_network = nn.Sequential(
             Dense(n_atom_basis, max_clusters, activation=swish, weight_init=xavier_uniform_),
             Dense(max_clusters, max_clusters, activation=softmax, weight_init=orthogonal_)
@@ -48,7 +46,7 @@ class TypeMapping(nn.Module):
     
 class Clustering(nn.Module):
     r"""Clustering block. This block contains the TypeMapping-layer which is used to learn the atom-cluster assignments.
-    Furthermore, this block provides all quantities necessary for evaluating the clustering loss function.
+    Furthermore, this block provides all quantities necessary for evaluating the nn loss function.
     Args:
         features (int): number of features to describe atomic environments.
         max_clusters (int): maximum number of atom-group types.

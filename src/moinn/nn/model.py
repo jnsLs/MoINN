@@ -5,11 +5,11 @@ from schnetpack.nn import shifted_softplus, Dense
 
 class EndToEndModel(nn.Module):
     """
-    Join a representation model with clustering module.
+    Join a representation model with nn module.
 
     Args:
         representation (torch.nn.Module): Representation block of the model.
-        output_module (e.g. clustering modul): Output block of the model. Needed for predicting properties.
+        output_module (e.g. nn modul): Output block of the model. Needed for predicting properties.
 
     Returns:
          dict: property predictions

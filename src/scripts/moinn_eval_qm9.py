@@ -36,7 +36,7 @@ def plot_table(figname, filled_clusters, cellText, rows, colors_text=None):
     # Adjust layout to make room for the table:
     plt.subplots_adjust(left=0.2, bottom=0.2)
 
-    plt.title('Cluster Type Usage')
+    plt.title('Environment Type Usage')
     plt.ylabel('#atoms assigned to certain type')
     plt.xticks([])
     fig.savefig(figname)
@@ -104,9 +104,9 @@ if __name__ == "__main__":
         substruc_indices[row_idx] = row_tmp
 
     # rows
-    rows = ["cluster-type"]
+    rows = ["env.-type"]
     for _ in range(5):
-        rows.append("sub-struc. {}".format(_))
+        rows.append("moiety {}".format(_))
     # table entries
     cellText = [[str(_) for _ in range(n_used_types)]]
     cellText += substruc_indices
@@ -125,7 +125,7 @@ if __name__ == "__main__":
 
     # show most common substructures
     plot_table(
-        figname=os.path.join(eval_dir, "common_substructures.pdf"),
+        figname=os.path.join(eval_dir, "common_moieties.pdf"),
         filled_clusters=filled_clusters[used_types],
         cellText=cellText,
         rows=rows,

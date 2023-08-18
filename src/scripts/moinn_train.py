@@ -5,11 +5,11 @@ from torch.optim import Adam
 import schnetpack as spk
 from schnetpack.nn.cutoff import CosineCutoff
 
-from moinn.clustering.clustering_module import Clustering
-from moinn.clustering.loss import clustering_loss_fn, cut_loss, ortho_loss, entropy_loss
-from moinn.clustering.model import EndToEndModel
+from moinn.nn.clustering_module import Clustering
+from moinn.training.loss import clustering_loss_fn, cut_loss, ortho_loss, entropy_loss
+from moinn.nn.model import EndToEndModel
 from moinn.training.trainer import Trainer
-from moinn.clustering.utils.parsing import get_parser
+from moinn.utils.parsing import get_parser
 
 
 ########################################################################################################################
@@ -21,7 +21,7 @@ args = parser.parse_args()
 
 # load model or create model directory
 if os.path.exists(args.model_dir):
-    print("loading existing clustering model...")
+    print("loading existing nn model...")
 else:
     os.makedirs(args.model_dir)
 
@@ -58,7 +58,7 @@ else:
         cutoff_network=CosineCutoff,
     )
 
-# define clustering model
+# define nn model
 clustering_model = Clustering(
     features=args.features,
     max_clusters=args.max_clusters,

@@ -2,8 +2,8 @@ import torch
 from tqdm import tqdm
 import collections
 
-from moinn.clustering.utils.coarse_graining import spatial_assignments, get_hard_assignments
-from moinn.clustering.neighbors import PairwiseDistances, AdjMatrix
+from moinn.utils.coarse_graining import spatial_assignments, get_hard_assignments
+from moinn.nn.neighbors import PairwiseDistances, AdjMatrix
 from schnetpack.nn.cutoff import HardCutoff
 
 

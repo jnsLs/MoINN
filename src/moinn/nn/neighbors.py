@@ -16,7 +16,7 @@ class PairwiseDistances(nn.Module):
     """
     Layer for computing the pairwise distance matrix. Matrix is quadratic 
     and symmetric with entries d_ij = r_i - r_j. All possible atom pairs are
-    considered. This Layer is particularly used in the clustering module.
+    considered. This Layer is particularly used in the nn module.
        
     Returns:
         torch.Tensor: Pairwise distances (Nbatch x Nat x Nat)
@@ -51,7 +51,7 @@ class AdjMatrix(nn.Module):
         representation_term (boolean): if True, the returned tensor is given by
             the elementwise product between specified adjacency matrix and a
             representation similarity term. This term is usefull when performing
-            spectral clustering. (default=False)
+            spectral nn. (default=False)
         zero_diag (boolean): if True, self loops in the adjacency matrix are 
             eliminated (default=True)
     Returns:
