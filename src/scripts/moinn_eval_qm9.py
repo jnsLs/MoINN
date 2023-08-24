@@ -53,13 +53,11 @@ def plot_table(figname, filled_clusters, cellText, rows, colors_text=None):
     fig.savefig(figname)
 
 
-
 def get_node_colors(type_ass, non_empty_clusters):
     """
     non_empty_clusters is used to get valid clusters and map colors to valid clusters only (for entire validation set)
     this is done because it is hard to find more than 20 distinguishable colors
     """
-
 
     valid_cl = {}
     n_valid = 0
@@ -169,9 +167,9 @@ if __name__ == "__main__":
     for idx in range(n_colored_rows + 1, len(colors_text)):
         colors_text[idx] = ['w' for _ in range(n_used_types)]
 
-    ########################################################################################################################
+    ####################################################################################################################
     # plot
-    ########################################################################################################################
+    ####################################################################################################################
 
     # show most common substructures
     plot_table(
@@ -182,10 +180,12 @@ if __name__ == "__main__":
         colors_text=colors_text
     )
 
+    torch.save(used_types, os.path.join(mdir, "filled_clusters"))
 
-    ########################################################################################################################
+
+    ####################################################################################################################
     # sample analysis
-    ########################################################################################################################
+    ####################################################################################################################
     for batch_idx, batch in enumerate(test_loader):
         batch = {k: v.to(device) for k, v in batch.items()}
 
@@ -197,7 +197,6 @@ if __name__ == "__main__":
         at_tmp_path = os.path.join(eval_dir, "tmp", "at.xyz")
         write(at_tmp_path, at)
 
-        charge = 0.
         raw_mol = Chem.MolFromXYZFile(at_tmp_path)
         mol = Chem.Mol(raw_mol)
         rdDetermineBonds.DetermineBonds(mol, charge=0)
@@ -205,11 +204,6 @@ if __name__ == "__main__":
         # get type assignments
         result = model(batch)
         type_ass = result["type_assignments"][0]
-
-        #adjacency = AdjMatrix(HardCutoff, [1.6], normalize=False, zero_diag=False).to(device)
-        #distances = PairwiseDistances().to(device)
-        #r_ij = distances(batch["_positions"])
-        #result["graph"] = adjacency(batch["_atom_mask"], r_ij)
 
         con_mat = Chem.GetAdjacencyMatrix(mol, useBO=False)
         con_mat = con_mat + np.eye(con_mat.shape[0], con_mat.shape[1])
@@ -249,6 +243,3 @@ if __name__ == "__main__":
             new_im.paste(im, (x_offset, 0))
             x_offset += im.size[0]
         new_im.save(os.path.join(eval_dir, "assignments_{}.png".format(batch_idx)))
-
-        if batch_idx + 2 > 20:
-            break
