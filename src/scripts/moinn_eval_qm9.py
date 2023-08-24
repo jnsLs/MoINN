@@ -1,11 +1,22 @@
 import os
-import schnetpack as spk
 import torch
-import matplotlib.pyplot as plt
+from PIL import Image
 from shutil import rmtree
+import matplotlib.pyplot as plt
+import numpy as np
+
+import ase
+from ase.io import write
+from rdkit import Chem
+from rdkit.Chem import rdDetermineBonds
+
+import schnetpack as spk
 
 from moinn.evaluation import EnvironmentTypes
-from moinn.evaluation import get_topk_moieties
+from moinn.evaluation.moieties import get_topk_moieties, spatial_assignments
+from schnetpack.nn.cutoff import HardCutoff
+from moinn.nn.neighbors import PairwiseDistances, AdjMatrix
+from schnetpack.clustering.utils.visualization import vis_type_ass_on_molecule
 
 
 def plot_table(figname, filled_clusters, cellText, rows, colors_text=None):
@@ -40,6 +51,45 @@ def plot_table(figname, filled_clusters, cellText, rows, colors_text=None):
     plt.ylabel('#atoms assigned to certain type')
     plt.xticks([])
     fig.savefig(figname)
+
+
+
+def get_node_colors(type_ass, non_empty_clusters):
+    """
+    non_empty_clusters is used to get valid clusters and map colors to valid clusters only (for entire validation set)
+    this is done because it is hard to find more than 20 distinguishable colors
+    """
+
+
+    valid_cl = {}
+    n_valid = 0
+    for idx, entry in enumerate(non_empty_clusters):
+        if entry == 1.:
+            valid_cl[idx] = n_valid
+            n_valid += 1
+    print(valid_cl)
+
+    # get assignment matrix for pentacene
+    ass = type_ass
+
+    # get list of node colors (integers)
+    node_colors = {}
+    percent = torch.zeros_like(ass).int()
+    for node_idx, node_ass in enumerate(ass):
+        percent[node_idx] = (node_ass * 20).int()
+        node_colors[node_idx] = (node_ass > 0.05).nonzero()[:, 0].tolist()
+
+    # apply color map
+    cmap = plt.get_cmap("tab20")
+    for k, values in node_colors.items():
+        node_colors_tmp = []
+        for v in values:
+            for _ in range(percent[k, v].item()):
+                node_colors_tmp.append(tuple(cmap(valid_cl[v])))
+                #node_colors_tmp.append(tuple(cmap(v)))
+        node_colors[k] = node_colors_tmp
+
+    return node_colors
 
 
 if __name__ == "__main__":
@@ -132,4 +182,73 @@ if __name__ == "__main__":
         colors_text=colors_text
     )
 
-    print()
+
+    ########################################################################################################################
+    # sample analysis
+    ########################################################################################################################
+    for batch_idx, batch in enumerate(test_loader):
+        batch = {k: v.to(device) for k, v in batch.items()}
+
+        # define rdkit molecule object
+        atoms = batch["_atomic_numbers"][0].tolist()
+        xyz_coordinates = batch["_positions"][0].tolist()
+
+        at = ase.Atoms(positions=xyz_coordinates, numbers=atoms)
+        at_tmp_path = os.path.join(eval_dir, "tmp", "at.xyz")
+        write(at_tmp_path, at)
+
+        charge = 0.
+        raw_mol = Chem.MolFromXYZFile(at_tmp_path)
+        mol = Chem.Mol(raw_mol)
+        rdDetermineBonds.DetermineBonds(mol, charge=0)
+
+        # get type assignments
+        result = model(batch)
+        type_ass = result["type_assignments"][0]
+
+        #adjacency = AdjMatrix(HardCutoff, [1.6], normalize=False, zero_diag=False).to(device)
+        #distances = PairwiseDistances().to(device)
+        #r_ij = distances(batch["_positions"])
+        #result["graph"] = adjacency(batch["_atom_mask"], r_ij)
+
+        con_mat = Chem.GetAdjacencyMatrix(mol, useBO=False)
+        con_mat = con_mat + np.eye(con_mat.shape[0], con_mat.shape[1])
+        con_mat = np.expand_dims(con_mat, axis=0)
+        con_mat = torch.tensor(con_mat, dtype=torch.float32).to(device)
+        result["graph"] = con_mat
+
+        bead_ass = spatial_assignments(
+            result["type_assignments"],
+            result["graph"],
+            batch["_atom_mask"]
+        ).detach()[0]
+        cmap = plt.get_cmap("tab20")
+        colors = []
+        for row in bead_ass:
+            colors.append([cmap(row.nonzero().tolist()[0][0])])  # could be buggy
+        node_colors = {}
+        for at_idx, color in enumerate(colors):
+            node_colors[at_idx] = color
+
+        fig_name = os.path.join(eval_dir, "tmp", "bead_assignments_{}".format(batch_idx))
+        vis_type_ass_on_molecule(mol, fig_name, node_colors)
+
+        node_colors = get_node_colors(type_ass.cpu(), used_types.float().tolist())
+        fig_name = os.path.join(eval_dir, "tmp", "type_assignments_{}".format(batch_idx))
+        vis_type_ass_on_molecule(mol, fig_name, node_colors)
+
+        # store in one file
+        images = [Image.open(x) for x in [os.path.join(eval_dir, "tmp", "type_assignments_{}.png".format(batch_idx)),
+                                          os.path.join(eval_dir, "tmp", "bead_assignments_{}.png".format(batch_idx))]]
+        widths, heights = zip(*(i.size for i in images))
+        total_width = sum(widths)
+        max_height = max(heights)
+        new_im = Image.new('RGB', (total_width, max_height))
+        x_offset = 0
+        for im in images:
+            new_im.paste(im, (x_offset, 0))
+            x_offset += im.size[0]
+        new_im.save(os.path.join(eval_dir, "assignments_{}.png".format(batch_idx)))
+
+        if batch_idx + 2 > 20:
+            break

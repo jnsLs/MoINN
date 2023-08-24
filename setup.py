@@ -31,10 +31,8 @@ setup(
         "pyyaml",
         "rdkit",
         "networkx",
-        "schnetpack@git+https://github.com/atomistic-machine-learning/schnetpack@schnetpack1.0#egg=prompt-toolkit-1.0.0",
-        #"schnetpack @ git+ssh://git@github.com/atomistic-machine-learning/schnetpack@schnetpack1.0",
+        "schnetpack@git+https://github.com/atomistic-machine-learning/schnetpack@schnetpack1.0#egg=prompt-toolkit-1.0.0"
     ],
-    #dependency_links=['git+https://github.com/atomistic-machine-learning/schnetpack@schnetpack1.0#egg=prompt-toolkit-1.0.0'],
     extras_require={},
     license="MIT",
     description="MoINN - Automatic Identification of Chemical Moieties",
