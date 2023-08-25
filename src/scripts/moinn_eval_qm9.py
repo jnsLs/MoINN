@@ -4,19 +4,20 @@ from PIL import Image
 from shutil import rmtree
 import matplotlib.pyplot as plt
 import numpy as np
+import logging
 
 import ase
 from ase.io import write
 from rdkit import Chem
 from rdkit.Chem import rdDetermineBonds
-
+from tqdm import tqdm
 import schnetpack as spk
 
 from moinn.evaluation import EnvironmentTypes
 from moinn.evaluation.moieties import get_topk_moieties, spatial_assignments
 from schnetpack.nn.cutoff import HardCutoff
 from moinn.nn.neighbors import PairwiseDistances, AdjMatrix
-from schnetpack.clustering.utils.visualization import vis_type_ass_on_molecule
+from moinn.evaluation.visualization import vis_type_ass_on_molecule
 
 
 def plot_table(figname, filled_clusters, cellText, rows, colors_text=None):
@@ -25,7 +26,6 @@ def plot_table(figname, filled_clusters, cellText, rows, colors_text=None):
 
     # bar plot of frequency of cluster types
     if colors_text is not None:
-        cmap = plt.get_cmap("tab20")
         colors = [cmap(idx) for idx in range(filled_clusters.shape[0])]
         plt.bar(range(filled_clusters.shape[0]), filled_clusters.numpy(), 0.4, color=colors)
     else:
@@ -65,7 +65,6 @@ def get_node_colors(type_ass, non_empty_clusters):
         if entry == 1.:
             valid_cl[idx] = n_valid
             n_valid += 1
-    print(valid_cl)
 
     # get assignment matrix for pentacene
     ass = type_ass
@@ -78,7 +77,6 @@ def get_node_colors(type_ass, non_empty_clusters):
         node_colors[node_idx] = (node_ass > 0.05).nonzero()[:, 0].tolist()
 
     # apply color map
-    cmap = plt.get_cmap("tab20")
     for k, values in node_colors.items():
         node_colors_tmp = []
         for v in values:
@@ -93,10 +91,11 @@ def get_node_colors(type_ass, non_empty_clusters):
 if __name__ == "__main__":
     dpath = "/home/jonas/Documents/datasets/qm9_old/qm9.db"
     mdir = "/home/jonas/Desktop/moinn_pretrained"
-    eval_set_size = 100
+    eval_set_size = 1000
     device = torch.device('cuda')
-    batch_size = 1
+    batch_size = 1  # this works not yet for the sample analysis
     topk = 5
+    cmap = plt.get_cmap("tab10")
 
     atom_names_dict = {1: "H", 6: "C", 7: "N", 8: "O", 9: "F", 16: "S"}
 
@@ -121,19 +120,21 @@ if __name__ == "__main__":
     test_loader = spk.data.AtomsLoader(data_test, batch_size=batch_size, num_workers=0, pin_memory=True)
 
     # load model
-    modelpath = os.path.join(mdir, "best_model")
+    modelpath = os.path.join(mdir, "best_model_new")
     model = torch.load(modelpath, map_location=device)
 
+    print("get used environment types ...")
     environment_types = EnvironmentTypes(test_loader, model, device)
     used_types, filled_clusters = environment_types.get_used_types()
 
+    print("get moieties ...")
     substruc_indices, count_values, all_substructures_dense = get_topk_moieties(
         test_loader, model, used_types, topk, device
     )
 
     n_used_types = substruc_indices.shape[1]
 
-    cmap = plt.get_cmap("tab20")
+
     colors_dict = torch.unique(substruc_indices).tolist()
     colors_dict = {struc_idx: cmap(color_idx) for color_idx, struc_idx in enumerate(colors_dict)}
 
@@ -186,7 +187,8 @@ if __name__ == "__main__":
     ####################################################################################################################
     # sample analysis
     ####################################################################################################################
-    for batch_idx, batch in enumerate(test_loader):
+    print("visualize env. types and moieties on exemplary molecules ...")
+    for batch_idx, batch in tqdm(enumerate(test_loader)):
         batch = {k: v.to(device) for k, v in batch.items()}
 
         # define rdkit molecule object
@@ -216,7 +218,7 @@ if __name__ == "__main__":
             result["graph"],
             batch["_atom_mask"]
         ).detach()[0]
-        cmap = plt.get_cmap("tab20")
+
         colors = []
         for row in bead_ass:
             colors.append([cmap(row.nonzero().tolist()[0][0])])  # could be buggy

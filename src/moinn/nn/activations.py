@@ -1,3 +1,4 @@
+import torch
 from torch.nn import functional
 
 
@@ -6,4 +7,4 @@ def softmax(x):
 
 
 def swish(x):
-    return x * functional.sigmoid(x)
+    return x * torch.sigmoid(x)
