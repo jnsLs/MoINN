@@ -90,11 +90,11 @@ def get_node_colors(type_ass, non_empty_clusters):
 
 if __name__ == "__main__":
     dpath = "/home/jonas/Documents/datasets/qm9_old/qm9.db"
-    mdir = "/home/jonas/Desktop/moinn_pretrained"
+    mdir = "/home/jonas/Documents/1-graph_pooling/moinn/trained_models/moinn_pretrained_10000/best_model"
     eval_set_size = 1000
     device = torch.device('cuda')
     batch_size = 1  # this works not yet for the sample analysis
-    topk = 5
+    topk = 3
     cmap = plt.get_cmap("tab10")
 
     atom_names_dict = {1: "H", 6: "C", 7: "N", 8: "O", 9: "F", 16: "S"}
