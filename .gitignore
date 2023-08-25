@@ -5,3 +5,4 @@ src/moinn/evaluation/__pycache__/
 src/moinn/nn/__pycache__/
 src/moinn/training/__pycache__/
 src/moinn/__pycache__/
+src/scripts/convert_old_model_to_new.py
