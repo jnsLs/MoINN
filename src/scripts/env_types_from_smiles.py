@@ -65,11 +65,12 @@ smiles_dict = {
 
 if __name__ == "__main__":
 
-    mdir = "/home/jonas/Desktop/moinn_pretrained"
-    mpath = os.path.join(mdir, "best_model_new")
+    mdir = "/home/jonas/Documents/1-graph_pooling/moinn/trained_models/moinn_pretrained_10000"
+    mpath = os.path.join(mdir, "best_model")
     device = torch.device('cuda')
     smiles = "CC(=O)NC(C)C(=O)NC"   # alanine-dipeptide
     cmap = plt.get_cmap("tab10")
+    eval_dir = os.path.join(mdir, "eval")
 
     # get model
     model = torch.load(mpath, map_location=device)
@@ -83,7 +84,7 @@ if __name__ == "__main__":
 
     # get valid clusters and map colors to valid clusters only (for entire validation set)
     # this is done because it is hard to find more than 20 distinguishable colors
-    non_empty_clusters = torch.load(os.path.join(mdir, "filled_clusters"))
+    non_empty_clusters = torch.load(os.path.join(eval_dir, "filled_clusters"))
 
     # filter out non-used type assignments
     n_atoms = type_ass.shape[0]
@@ -107,5 +108,5 @@ if __name__ == "__main__":
                 node_colors_tmp.append(tuple(cmap(v)))
         node_colors[k] = node_colors_tmp
 
-    fig_name = '/home/jonas/Documents/tmp/type_assignments'
+    fig_name = os.path.join(eval_dir, 'type_assignments')
     vis_type_ass_on_molecule(rdkmol, fig_name, node_colors)

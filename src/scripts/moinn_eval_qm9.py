@@ -4,8 +4,6 @@ from PIL import Image
 from shutil import rmtree
 import matplotlib.pyplot as plt
 import numpy as np
-import logging
-
 import ase
 from ase.io import write
 from rdkit import Chem
@@ -15,8 +13,6 @@ import schnetpack as spk
 
 from moinn.evaluation import EnvironmentTypes
 from moinn.evaluation.moieties import get_topk_moieties, spatial_assignments
-from schnetpack.nn.cutoff import HardCutoff
-from moinn.nn.neighbors import PairwiseDistances, AdjMatrix
 from moinn.evaluation.visualization import vis_type_ass_on_molecule
 
 
@@ -82,7 +78,6 @@ def get_node_colors(type_ass, non_empty_clusters):
         for v in values:
             for _ in range(percent[k, v].item()):
                 node_colors_tmp.append(tuple(cmap(valid_cl[v])))
-                #node_colors_tmp.append(tuple(cmap(v)))
         node_colors[k] = node_colors_tmp
 
     return node_colors
@@ -90,7 +85,7 @@ def get_node_colors(type_ass, non_empty_clusters):
 
 if __name__ == "__main__":
     dpath = "/home/jonas/Documents/datasets/qm9_old/qm9.db"
-    mdir = "/home/jonas/Documents/1-graph_pooling/moinn/trained_models/moinn_pretrained_10000/best_model"
+    mdir = "/home/jonas/Documents/1-graph_pooling/moinn/trained_models/moinn_pretrained_10000"
     eval_set_size = 1000
     device = torch.device('cuda')
     batch_size = 1  # this works not yet for the sample analysis
@@ -99,7 +94,7 @@ if __name__ == "__main__":
 
     atom_names_dict = {1: "H", 6: "C", 7: "N", 8: "O", 9: "F", 16: "S"}
 
-    eval_dir = os.path.join(mdir, "eval_images")
+    eval_dir = os.path.join(mdir, "eval")
 
     # create directory
     tmp_dir = os.path.join(eval_dir, "tmp")
@@ -120,7 +115,7 @@ if __name__ == "__main__":
     test_loader = spk.data.AtomsLoader(data_test, batch_size=batch_size, num_workers=0, pin_memory=True)
 
     # load model
-    modelpath = os.path.join(mdir, "best_model_new")
+    modelpath = os.path.join(mdir, "best_model")
     model = torch.load(modelpath, map_location=device)
 
     print("get used environment types ...")
@@ -133,7 +128,6 @@ if __name__ == "__main__":
     )
 
     n_used_types = substruc_indices.shape[1]
-
 
     colors_dict = torch.unique(substruc_indices).tolist()
     colors_dict = {struc_idx: cmap(color_idx) for color_idx, struc_idx in enumerate(colors_dict)}
@@ -154,7 +148,7 @@ if __name__ == "__main__":
 
     # rows
     rows = ["env.-type"]
-    for _ in range(5):
+    for _ in range(topk):
         rows.append("moiety {}".format(_))
     # table entries
     cellText = [[str(_) for _ in range(n_used_types)]]
@@ -181,7 +175,7 @@ if __name__ == "__main__":
         colors_text=colors_text
     )
 
-    torch.save(used_types, os.path.join(mdir, "filled_clusters"))
+    torch.save(used_types, os.path.join(eval_dir, "filled_clusters"))
 
 
     ####################################################################################################################
@@ -199,9 +193,12 @@ if __name__ == "__main__":
         at_tmp_path = os.path.join(eval_dir, "tmp", "at.xyz")
         write(at_tmp_path, at)
 
-        raw_mol = Chem.MolFromXYZFile(at_tmp_path)
-        mol = Chem.Mol(raw_mol)
-        rdDetermineBonds.DetermineBonds(mol, charge=0)
+        try:
+            raw_mol = Chem.MolFromXYZFile(at_tmp_path)
+            mol = Chem.Mol(raw_mol)
+            rdDetermineBonds.DetermineBonds(mol, charge=0)
+        except:
+            continue
 
         # get type assignments
         result = model(batch)
