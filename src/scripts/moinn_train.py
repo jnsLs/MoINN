@@ -10,6 +10,7 @@ from moinn.training.loss import clustering_loss_fn, cut_loss, ortho_loss, entrop
 from moinn.nn.model import EndToEndModel
 from moinn.training.trainer import Trainer
 from moinn.utils.parsing import get_parser
+from moinn.training.loss import ClusteringLoss
 
 
 ########################################################################################################################
@@ -104,10 +105,10 @@ device = torch.device("cuda" if args.cuda else "cpu")
 
 # define logger
 metrics = [
-            spk.train.metrics.ClusteringLoss(cut_loss, "mincut_penalty"),
-            spk.train.metrics.ClusteringLoss(ortho_loss, "ortho_penalty", args=args),
-            spk.train.metrics.ClusteringLoss(entropy_loss, "entropy")
-        ]
+    ClusteringLoss(cut_loss, "mincut_penalty"),
+    ClusteringLoss(ortho_loss, "ortho_penalty", args=args),
+    ClusteringLoss(entropy_loss, "entropy")
+]
 logger = spk.train.TensorboardHook(
     os.path.join(args.model_dir, "log"),
     metrics,

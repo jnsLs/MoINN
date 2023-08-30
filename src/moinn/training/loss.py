@@ -1,6 +1,7 @@
 import torch
-import schnetpack.clustering.utils.batch_tensor_operations as bo
+import moinn.utils.batch_tensor_operations as bo
 import math
+from schnetpack.train.metrics import Metric
 
 
 def clustering_loss_fn(args):
@@ -88,3 +89,37 @@ def entropy_loss(batch, result, args=None):
     #ent = torch.exp((-type_ass * torch.log(type_ass + EPS)).sum(dim=-1).mean())     # linear
     #ent = (torch.exp((-type_ass * torch.log(type_ass + EPS)).sum(dim=-1).mean())) ** 2     # quadratic
     return ent
+
+
+class ClusteringLoss(Metric):
+    def __init__(
+            self,
+            loss,
+            name,
+            model_output=None,
+            bias_correction=None,
+            element_wise=False,
+            args=None,
+    ):
+        super(ClusteringLoss, self).__init__(
+            target=None,
+            model_output=model_output,
+            name=name,
+            element_wise=element_wise,
+        )
+        self.loss = loss
+        self.args = args
+        self.l2loss = 0.0
+
+    def reset(self):
+        """Reset metric attributes after aggregation to collect new batches."""
+        self.l2loss = 0.0
+        self.n_entries = 0.0
+
+    def add_batch(self, batch, result):
+        diff = self.loss(batch, result, self.args)
+        self.l2loss += torch.mean(diff).detach().cpu().data.numpy()
+        self.n_entries += 1
+
+    def aggregate(self):
+        return self.l2loss / self.n_entries

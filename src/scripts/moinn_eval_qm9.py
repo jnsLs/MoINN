@@ -10,6 +10,7 @@ from rdkit import Chem
 from rdkit.Chem import rdDetermineBonds
 from tqdm import tqdm
 import schnetpack as spk
+import argparse
 
 from moinn.evaluation import EnvironmentTypes
 from moinn.evaluation.moieties import get_topk_moieties, spatial_assignments
@@ -84,17 +85,22 @@ def get_node_colors(type_ass, non_empty_clusters):
 
 
 if __name__ == "__main__":
-    dpath = "/home/jonas/Documents/datasets/qm9_old/qm9.db"
-    mdir = "/home/jonas/Documents/1-graph_pooling/moinn/trained_models/moinn_pretrained_10000"
-    eval_set_size = 1000
-    device = torch.device('cuda')
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--datapath", type=str)
+    parser.add_argument("--modeldir", type=str)
+    parser.add_argument("--eval_set_size", type=int, default=1000)
+    parser.add_argument("--device", type=str, default="cuda")
+    args = parser.parse_args()
+
+    device = torch.device(args.device)
     batch_size = 1  # this works not yet for the sample analysis
     topk = 3
     cmap = plt.get_cmap("tab10")
 
     atom_names_dict = {1: "H", 6: "C", 7: "N", 8: "O", 9: "F", 16: "S"}
 
-    eval_dir = os.path.join(mdir, "eval")
+    eval_dir = os.path.join(args.modeldir, "eval")
 
     # create directory
     tmp_dir = os.path.join(eval_dir, "tmp")
@@ -104,18 +110,18 @@ if __name__ == "__main__":
     os.makedirs(tmp_dir)
 
     # load dataset splits
-    dataset = spk.AtomsData(dpath)
-    split_path = os.path.join(mdir, "split.npz")
+    dataset = spk.AtomsData(args.datapath)
+    split_path = os.path.join(args.modeldir, "split.npz")
     data_train, data_val, data_test = spk.data.train_test_split(
         dataset, split_file=split_path
     )
-    data_test = data_test.create_subset([_ for _ in range(eval_set_size)])
+    data_test = data_test.create_subset([_ for _ in range(args.eval_set_size)])
 
     # chose loader
     test_loader = spk.data.AtomsLoader(data_test, batch_size=batch_size, num_workers=0, pin_memory=True)
 
     # load model
-    modelpath = os.path.join(mdir, "best_model")
+    modelpath = os.path.join(args.modeldir, "best_model")
     model = torch.load(modelpath, map_location=device)
 
     print("get used environment types ...")
