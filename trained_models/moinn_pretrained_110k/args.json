@@ -1,0 +1,38 @@
+{
+    "batch_size": 100,
+    "bead_cutoff_function": "cosine",
+    "bead_cutoff_parameters": [
+        3.5
+    ],
+    "clustering_mode": "pretrained",
+    "clustering_tradeoff": [
+        1.0,
+        0.16
+    ],
+    "cuda": true,
+    "datapath": "/temp/lederer/577760.3/qm9.db",
+    "features": 128,
+    "interactions": 3,
+    "lr": 0.001,
+    "lr_decay": 0.8,
+    "lr_min": 1e-05,
+    "lr_patience": 25,
+    "manual_seed": 3,
+    "max_clusters": 100,
+    "mincut_cutoff_function": "cosine",
+    "mincut_cutoff_radius": [
+        1.8
+    ],
+    "n_epochs": 1000,
+    "normalize_mincut_adj": true,
+    "rep_model_dir": "../pretrained_representation_model/3_interactions/",
+    "split": [
+        null,
+        null
+    ],
+    "split_path": null,
+    "tradeoff_warmup_epochs": [
+        0.0,
+        0.0
+    ]
+}

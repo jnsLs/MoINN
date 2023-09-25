@@ -90,11 +90,12 @@ if __name__ == "__main__":
     parser.add_argument("--datapath", type=str)
     parser.add_argument("--modeldir", type=str)
     parser.add_argument("--eval_set_size", type=int, default=1000)
+    parser.add_argument("--n_examples", type=int, default=50)
     parser.add_argument("--device", type=str, default="cuda")
     args = parser.parse_args()
 
     device = torch.device(args.device)
-    batch_size = 1  # this works not yet for the sample analysis
+    batch_size = 1  # batch size greater than 1 does not work yet for the sample analysis
     topk = 3
     cmap = plt.get_cmap("tab10")
 
@@ -189,6 +190,10 @@ if __name__ == "__main__":
     ####################################################################################################################
     print("visualize env. types and moieties on exemplary molecules ...")
     for batch_idx, batch in tqdm(enumerate(test_loader)):
+
+        if batch_idx >= args.n_examples:
+            break
+
         batch = {k: v.to(device) for k, v in batch.items()}
 
         # define rdkit molecule object

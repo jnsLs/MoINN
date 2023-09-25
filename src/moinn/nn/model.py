@@ -26,10 +26,12 @@ class EndToEndModel(nn.Module):
         Forward representation output through output modules.
         """
 
-        if self.clustering_mode == "supervised":
+        if self.clustering_mode == "pretrained":
             inputs["representation"] = self.representation(inputs).detach()
-        else:
+        elif self.clustering_mode == "end_to_end":
             inputs["representation"] = self.representation(inputs)
+        else:
+            raise NotImplementedError("clustering mode not implemented, yet. Choose \"pretrained\" or \"end_to_end\"")
         outs = self.output_module(inputs)
         return outs
 

@@ -6,4 +6,6 @@ src/moinn/nn/__pycache__/
 src/moinn/training/__pycache__/
 src/moinn/__pycache__/
 src/scripts/convert_old_model_to_new.py
-trained_models/moinn_pretrained_10000/eval/
+trained_models/moinn_pretrained_11k/eval/
+trained_models/moinn_pretrained_110k/eval/
+
