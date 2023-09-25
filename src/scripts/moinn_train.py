@@ -44,11 +44,11 @@ mincut_cutoff_network = spk.nn.cutoff.get_cutoff_by_string(args.mincut_cutoff_fu
 bead_cutoff_network = spk.nn.cutoff.get_cutoff_by_string(args.bead_cutoff_function)
 
 # TODO: cutoff und n_gaussians in arg parser
-if args.clustering_mode == "supervised":
+if args.clustering_mode == "pretrained":
     # load representation model
     schnet_model = torch.load(os.path.join(args.rep_model_dir, "best_model"))
     representation = schnet_model.representation
-else:
+elif args.clustering_mode == "end_to_end":
     # define representation model
     representation = spk.representation.SchNet(
         n_atom_basis=args.features,
@@ -58,6 +58,8 @@ else:
         n_gaussians=50,
         cutoff_network=CosineCutoff,
     )
+else:
+    raise NotImplementedError("clustering mode not implemented, yet. Choose \"pretrained\" or \"end_to_end\"")
 
 # define nn model
 clustering_model = Clustering(

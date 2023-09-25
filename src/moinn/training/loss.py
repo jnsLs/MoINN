@@ -85,9 +85,7 @@ def ortho_loss(batch, result, args):
 def entropy_loss(batch, result, args=None):
     type_ass = result["type_assignments"]
     EPS = 1e-15
-    ent = (-type_ass * torch.log(type_ass + EPS)).sum(dim=-1).mean(dim=-1)  # logarithmic
-    #ent = torch.exp((-type_ass * torch.log(type_ass + EPS)).sum(dim=-1).mean())     # linear
-    #ent = (torch.exp((-type_ass * torch.log(type_ass + EPS)).sum(dim=-1).mean())) ** 2     # quadratic
+    ent = (-type_ass * torch.log(type_ass + EPS)).sum(dim=-1).mean(dim=-1)
     return ent
 
 

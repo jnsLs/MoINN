@@ -5,11 +5,11 @@ def get_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("--clustering_mode",
                         help="choose if representations are provided or learned",
-                        choices=["supervised", "unsupervised"],
+                        choices=["pretrained", "end_to_end"],
                         required=True)
     parser.add_argument("--datapath", help="path/to/dataset", type=str)
     parser.add_argument("--model_dir", help="directory/of/nn/model", type=str)
-    parser.add_argument("--rep_model_dir", help="directory/of/pretrained/model", type=str)
+    parser.add_argument("--rep_model_dir", help="directory/of/pretrained/MPNN", type=str)
     parser.add_argument(
         "--features", type=int, help="Size of atom-wise representation", default=128
     )

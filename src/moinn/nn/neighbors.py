@@ -1,15 +1,5 @@
 import torch
 from torch import nn
-from schnetpack.nn.cutoff import HardCutoff 
-
-import os
-
-#import pybel
-#import openbabel as ob
-#from rdkit import Chem
-#from rdkit.Chem import AllChem
-
-import numpy as np
 
 
 class PairwiseDistances(nn.Module):

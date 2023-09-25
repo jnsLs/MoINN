@@ -67,8 +67,6 @@ class MLP(nn.Module):
             pred = self.network(x["morgan_features"])
         elif self.feat_type == "dressed_atoms":
             pred = self.network(x["dressed_atoms"])
-            #at_nums = x["_atomic_numbers"]
-            #counts = torch.tensor(count_arrows(at_nums))
         else:
             results = self.cluster_model(x)
             type_ass = results["type_assignments"]
