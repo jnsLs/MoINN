@@ -1,10 +1,36 @@
 # MoINN
 Neural Network for Automatic Identification of Chemical Moieties
 
-## The code documentation will be updated in the next weeks.
+##### Requirements:
+- python 3.8
+- Atomic Simulation Environment (ASE)
+- NumPy 1.23.3
+- PyTorch 1.13.1
+- H5py
+- tensorboardX
+- tqdm
+- RDKit
+- NetworkX
+- SchNetPack 1.0
+
+_**Note: We recommend using a GPU for training the neural networks.**_
+
+
+## Installation
+
+### Install from source
+
+You can install the most recent code from our repository:
+
+```
+git clone https://github.com/jnsLs/MoINN.git
+cd MoINN
+pip install .
+```
+
 
 ## References
 
-* [1] J. Lederer, M. Gastegger, K. T. Schütt, M. Kampffmeyer, K.-R. Müller, O. T. Unke.  
-*Automatic Identification of Chemical Moieties.*
-ArXiv (2022). (https://arxiv.org/abs/2203.16205)
+* [1] Lederer, J., Gastegger, M., Schütt, K. T., Kampffmeyer, M., Müller, K.-R., & Unke, O. T.  
+*Automatic identification of chemical moieties.*
+Physical Chemistry Chemical Physics (2023). (https://doi.org/10.1039/D3CP03845A)
