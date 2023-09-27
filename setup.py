@@ -26,7 +26,7 @@ setup(
         "numpy==1.23.3",
         "ase>=3.18",
         "h5py",
-        "tensorboardX",
+        "tensorboard",
         "tqdm",
         "pyyaml",
         "rdkit",

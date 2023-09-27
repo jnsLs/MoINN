@@ -7,7 +7,7 @@ Neural Network for Automatic Identification of Chemical Moieties
 - NumPy 1.23.3
 - PyTorch 1.13.1
 - H5py
-- tensorboardX
+- tensorboard
 - tqdm
 - RDKit
 - NetworkX

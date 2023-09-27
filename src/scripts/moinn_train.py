@@ -11,6 +11,10 @@ from moinn.nn.model import EndToEndModel
 from moinn.training.trainer import Trainer
 from moinn.utils.parsing import get_parser
 from moinn.training.loss import ClusteringLoss
+import logging
+
+
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 
 
 ########################################################################################################################
@@ -22,7 +26,7 @@ args = parser.parse_args()
 
 # load model or create model directory
 if os.path.exists(args.model_dir):
-    print("loading existing nn model...")
+    logging.info("loading existing MoINN model...")
 else:
     os.makedirs(args.model_dir)
 
@@ -75,10 +79,10 @@ clustering_model = Clustering(
 model = EndToEndModel(representation, clustering_model, args.clustering_mode)
 
 # get dataset
-# TODO: downloadable datasets
-dataset = spk.AtomsData(args.datapath)
-#dataset = spk.datasets.MD17(args.datapath, "aspirin")
-#dataset = spk.datasets.QM9(args.datapath)
+if os.path.basename(args.datapath) == "qm9.db":
+    dataset = spk.datasets.QM9(args.datapath)
+else:
+    dataset = spk.AtomsData(args.datapath)
 data_train, data_val, data_test = spk.data.train_test_split(
     dataset, args.split[0], args.split[1], split_file=os.path.join(args.model_dir, "split.npz")
 )
@@ -137,6 +141,7 @@ trainer = Trainer(
     hooks=[logger],
 )
 
+logging.info("Starting training...")
 trainer.train(device, n_epochs=args.n_epochs)
 
 print(
