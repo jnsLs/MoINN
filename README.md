@@ -55,7 +55,8 @@ moinn_train --model_dir ./run0 --datapath ./data/qm9.db --tradeoff_warmup_epochs
 ```
 
 The dataset will be downloaded automatically to `spk_workdir/data`, if it does not exist yet.
-Then, the training will be started.
+Then, the training will be started. We provide a pretrained SchNet model, which can serve as a 
+representation model for the training of a pretrained MoINN model. It is stored in ```trained_models/schnet_model```.
 
 Training of an end-to-end MoINN model is performed with the following command:
 
