@@ -1,7 +1,7 @@
 # MoINN
 
 MoINN, short for Moiety Identification Neural Network, is designed to automate the 
-identification of chemical moieties, the fundamental building blocks of molecules
+identification of chemical moieties (fundamental building blocks of molecules)
 from machine learned representations. It has been shown that MoINN is suitable for
 the automatic construction of coarse-grained force fields, selecting representative 
 entries in chemical databases, as well as the identification of reaction coordinates. 
