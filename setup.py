@@ -18,6 +18,7 @@ setup(
     packages=find_packages("src"),
     scripts=[
         "src/scripts/moinn_train.py",
+        "src/scripts/moinn_eval_qm9.py",
     ],
     package_dir={"": "src"},
     python_requires=">=3.6",
@@ -28,7 +29,6 @@ setup(
         "h5py",
         "tensorboard",
         "tqdm",
-        "pyyaml",
         "rdkit",
         "networkx",
         "schnetpack@git+https://github.com/atomistic-machine-learning/schnetpack@schnetpack1.0#egg=prompt-toolkit-1.0.0"
@@ -37,7 +37,7 @@ setup(
     license="MIT",
     description="MoINN - Automatic Identification of Chemical Moieties",
     long_description="""
-        MoINN aims to automatically identify chemical moieties (molecular building blocks) from such machine learned
+        MoINN aims to automatically identify chemical moieties (molecular building blocks) from machine learned
         representations, enabling a variety of applications beyond property prediction, which otherwise rely on
         expert knowledge.
     """,

@@ -11,10 +11,14 @@ from rdkit.Chem import rdDetermineBonds
 from tqdm import tqdm
 import schnetpack as spk
 import argparse
+import logging
 
 from moinn.evaluation import EnvironmentTypes
 from moinn.evaluation.moieties import get_topk_moieties, spatial_assignments
 from moinn.evaluation.visualization import vis_type_ass_on_molecule
+
+
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 
 
 def plot_table(figname, filled_clusters, cellText, rows, colors_text=None):
@@ -88,7 +92,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--datapath", type=str)
-    parser.add_argument("--modeldir", type=str)
+    parser.add_argument("--model_dir", type=str)
     parser.add_argument("--eval_set_size", type=int, default=1000)
     parser.add_argument("--n_examples", type=int, default=50)
     parser.add_argument("--device", type=str, default="cuda")
@@ -101,18 +105,18 @@ if __name__ == "__main__":
 
     atom_names_dict = {1: "H", 6: "C", 7: "N", 8: "O", 9: "F", 16: "S"}
 
-    eval_dir = os.path.join(args.modeldir, "eval")
+    eval_dir = os.path.join(args.model_dir, "eval")
 
     # create directory
     tmp_dir = os.path.join(eval_dir, "tmp")
     if os.path.exists(tmp_dir):
-        print("existing evaluation results will be overwritten...")
+        logging.info("existing evaluation results will be overwritten...")
         rmtree(tmp_dir)
     os.makedirs(tmp_dir)
 
     # load dataset splits
     dataset = spk.AtomsData(args.datapath)
-    split_path = os.path.join(args.modeldir, "split.npz")
+    split_path = os.path.join(args.model_dir, "split.npz")
     data_train, data_val, data_test = spk.data.train_test_split(
         dataset, split_file=split_path
     )
@@ -122,14 +126,14 @@ if __name__ == "__main__":
     test_loader = spk.data.AtomsLoader(data_test, batch_size=batch_size, num_workers=0, pin_memory=True)
 
     # load model
-    modelpath = os.path.join(args.modeldir, "best_model")
+    modelpath = os.path.join(args.model_dir, "best_model")
     model = torch.load(modelpath, map_location=device)
 
-    print("get used environment types ...")
+    logging.info("get used environment types ...")
     environment_types = EnvironmentTypes(test_loader, model, device)
     used_types, filled_clusters = environment_types.get_used_types()
 
-    print("get moieties ...")
+    logging.info("get moieties ...")
     substruc_indices, count_values, all_substructures_dense = get_topk_moieties(
         test_loader, model, used_types, topk, device
     )
@@ -188,7 +192,7 @@ if __name__ == "__main__":
     ####################################################################################################################
     # sample analysis
     ####################################################################################################################
-    print("visualize env. types and moieties on exemplary molecules ...")
+    logging.info("visualize env. types and moieties on exemplary molecules ...")
     for batch_idx, batch in tqdm(enumerate(test_loader)):
 
         if batch_idx >= args.n_examples:

@@ -1,5 +1,13 @@
 # MoINN
-Neural Network for Automatic Identification of Chemical Moieties
+
+MoINN, short for Moiety Identification Neural Network, is designed to automate the 
+identification of chemical moieties, the fundamental building blocks of molecules
+from machine learned representations. It has been shown that MoINN is suitable for
+the automatic construction of coarse-grained force fields, selecting representative 
+entries in chemical databases, as well as the identification of reaction coordinates. 
+The design (differantiable, transferable w. r. t. molecule size) of MoINN makes it very 
+versatile and paves the way for many other interesting applications.
+
 
 ##### Requirements:
 - python 3.8
@@ -18,7 +26,6 @@ _**Note: We recommend using a GPU for training the neural networks.**_
 
 ## Installation
 
-### Install from source
 
 You can install the most recent code from our repository:
 
@@ -28,6 +35,40 @@ cd MoINN
 pip install .
 ```
 
+
+## Getting started
+
+In the following, we show the workflow of training and evaluating MoINN. Here,
+we focus on using the CLI to train on the QM9 dataset, but the same procedure 
+applies for other datasets as well. First, create a working directory, where 
+all data and runs will be stored:
+
+```
+mkdir moinn_workdir
+cd moinn_workdir
+```
+
+Then, the training of a pretrained MoINN model with default settings for QM9 can be started by:
+
+```
+moinn_train --model_dir ./run0 --datapath ./data/qm9.db --tradeoff_warmup_epochs 0 0 --split 1000 100 --clustering_mode pretrained --rep_model_dir /directory/of/MPNN/model --manual_seed 3 --cuda
+```
+
+The dataset will be downloaded automatically to `spk_workdir/data`, if it does not exist yet.
+Then, the training will be started.
+
+Training of an end-to-end MoINN model is performed with the following command:
+
+```
+moinn_train --model_dir ./run1 --datapath ./data/qm9.db --tradeoff_warmup_epochs 100 130 --split 1000 100 --clustering_mode end_to_end --manual_seed 3 --cuda
+```
+
+Finally, we can evaluate the respective MoINN model:
+
+```
+moinn_eval_qm9 --model_dir ./run0 --datapath ./data/qm9.db
+```
+The evaluation results will be stored in the model directory in a folder named ```eval```.
 
 ## References
 

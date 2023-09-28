@@ -14,7 +14,7 @@ def get_parser():
         "--features", type=int, help="Size of atom-wise representation", default=128
     )
     parser.add_argument(
-        "--interactions", type=int, help="Number of interaction blocks", default=6
+        "--interactions", type=int, help="Number of interaction blocks", default=3
     )
     parser.add_argument(
         "--cuda", help="Set flag to use GPU(s) for training", action="store_true"
@@ -50,7 +50,7 @@ def get_parser():
     parser.add_argument(
         "--max_clusters",
         type=int,
-        default=30,
+        default=100,
         help="Max. number of atom-group types (default: %(default)s)",
     )
     parser.add_argument(
@@ -63,13 +63,14 @@ def get_parser():
         "--mincut_cutoff_radius",
         type=float,
         nargs='*',
-        default=[2.0],
+        default=[1.8],
         help="cutoff radius determining minimal adjacency distance (ignored when cov_bonds is used, default: %(default)s)",
     )
     parser.add_argument(
         "--normalize_mincut_adj",
         help="mincut adj matrix is normalized",
-        action="store_true"
+        type=bool,
+        default=True,
     )
     parser.add_argument(
         "--bead_cutoff_function",
@@ -81,7 +82,7 @@ def get_parser():
         "--bead_cutoff_parameters",
         type=float,
         nargs="*",
-        default=[4.0],
+        default=[3.5],
         help="for cosine co-function, this represents a cutoff radius determining maximal adjacency distance\n"
              "for swicth co-function, two parameters must be passed (cut-on, cut-off)\n"
              "(used for bead assignments, default: %(default)s)",
@@ -91,7 +92,7 @@ def get_parser():
         help="tradeoff-factors for nn loss for entropy loss: [ortho], [entropy]",
         type=float,
         nargs=2,
-        default=[1.0, 0.06],
+        default=[1.0, 0.16],
     )
     parser.add_argument(
         "--tradeoff_warmup_epochs",
