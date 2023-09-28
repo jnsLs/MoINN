@@ -5,7 +5,7 @@ identification of chemical moieties (fundamental building blocks of molecules)
 from machine learned representations. It has been shown that MoINN is suitable for
 the automatic construction of coarse-grained force fields, selecting representative 
 entries in chemical databases, as well as the identification of reaction coordinates. 
-The design (differantiable, transferable w. r. t. molecule size) of MoINN makes it very 
+The design of MoINN (differantiable, transferable w. r. t. molecule size) makes it very 
 versatile and paves the way for many other interesting applications.
 
 
