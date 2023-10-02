@@ -51,7 +51,7 @@ cd moinn_workdir
 Then, the training of a pretrained MoINN model with default settings for QM9 can be started by:
 
 ```
-moinn_train --model_dir ./run0 --datapath ./data/qm9.db --tradeoff_warmup_epochs 0 0 --split 1000 100 --clustering_mode pretrained --rep_model_dir /directory/of/MPNN/model --manual_seed 3 --cuda
+moinn_train.py --model_dir ./run0 --datapath ./data/qm9.db --tradeoff_warmup_epochs 0 0 --split 1000 100 --clustering_mode pretrained --rep_model_dir /directory/of/MPNN/model --manual_seed 3 --cuda
 ```
 
 The dataset will be downloaded automatically to `spk_workdir/data`, if it does not exist yet.
@@ -61,13 +61,13 @@ representation model for the training of a pretrained MoINN model. It is stored 
 Training of an end-to-end MoINN model is performed with the following command:
 
 ```
-moinn_train --model_dir ./run1 --datapath ./data/qm9.db --tradeoff_warmup_epochs 100 130 --split 1000 100 --clustering_mode end_to_end --manual_seed 3 --cuda
+moinn_train.py --model_dir ./run1 --datapath ./data/qm9.db --tradeoff_warmup_epochs 100 130 --split 1000 100 --clustering_mode end_to_end --manual_seed 3 --cuda
 ```
 
 Finally, we can evaluate the respective MoINN model:
 
 ```
-moinn_eval_qm9 --model_dir ./run0 --datapath ./data/qm9.db
+moinn_eval_qm9.py --model_dir ./run0 --datapath ./data/qm9.db
 ```
 The evaluation results will be stored in the model directory in a folder named ```eval```.
 
