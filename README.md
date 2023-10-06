@@ -61,7 +61,7 @@ representation model for the training of a pretrained MoINN model. It is stored 
 Training of an end-to-end MoINN model is performed with the following command:
 
 ```
-moinn_train.py --model_dir ./run1 --datapath ./data/qm9.db --tradeoff_warmup_epochs 100 130 --split 1000 100 --clustering_mode end_to_end --manual_seed 3 --cuda
+moinn_train.py --model_dir ./run1 --datapath ./data/qm9.db --tradeoff_warmup_epochs 100 130 --split 1000 100 --clustering_mode end_to_end --manual_seed 3 --cuda --lr 0.0002
 ```
 
 Finally, we can evaluate the respective MoINN model:
