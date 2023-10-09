@@ -101,7 +101,6 @@ if __name__ == "__main__":
     device = torch.device(args.device)
     batch_size = 1  # batch size greater than 1 does not work yet for the sample analysis
     topk = 3
-    cmap = plt.get_cmap("tab10")
 
     atom_names_dict = {1: "H", 6: "C", 7: "N", 8: "O", 9: "F", 16: "S"}
 
@@ -132,6 +131,11 @@ if __name__ == "__main__":
     logging.info("get used environment types ...")
     environment_types = EnvironmentTypes(test_loader, model, device)
     used_types, filled_clusters = environment_types.get_used_types()
+
+    if used_types.sum().item() > 10:
+        cmap = plt.get_cmap("tab20")
+    else:
+        cmap = plt.get_cmap("tab10")
 
     logging.info("get moieties ...")
     substruc_indices, count_values, all_substructures_dense = get_topk_moieties(
